@@ -58,6 +58,25 @@ int main() {
         current_line.push_back(ch);
     }
 
+    while (true) {
+        int num_lines = lines.size();
+        bool is_in_order = true;
+        for (int i = 0; i < num_lines - 1; i++) {
+            std::string& curr_line = lines[i];
+            std::string& next_line = lines[i + 1];
+            if (curr_line.substr(0, 3) == "var") {
+                if (next_line.substr(0, 3) != "var") {
+                    std::string temp_line = curr_line;
+                    curr_line = next_line;
+                    next_line = temp_line;
+                    is_in_order = false;
+                }
+            }
+        }
+        if (is_in_order)
+            break;
+    }
+
     std::vector<std::vector<std::string>> source_tokens;
     for (std::string& line : lines) {
         std::vector<std::string> tokens = tokenize(line);

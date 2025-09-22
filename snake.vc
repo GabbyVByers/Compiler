@@ -1,19 +1,45 @@
-119 -> up;
-115 -> down;
-97 -> left;
-100 -> right;
 
+var key;
+var currentDirection;
+119 -> currentDirection;
+
+var up;
+var down;
+var left;
+var right;
+119 -> up;115 -> down;
+97 -> left;100 -> right;
+
+
+var head_x;
+var head_y;
 127 -> head_x;
 127 -> head_y;
 
-119 -> currentDirection;
+var tail_x;
+var tail_y;
 
+var head_index;
+var tail_index;
+
+var snake_body_x[512];
+var snake_body_y[512];
+
+var appleEatenCooldown;
 10 -> appleEatenCooldown;
+
+var apples_x[16];
+var apples_y[16];
+
+var index;
+
+
+
+
 
 0 -> index;
 loop initApples {
-	std::rand() & 255 -> apples_x[index];
-	std::rand() & 255 -> apples_y[index];
+	std::rand() & 255 -> apples_x[index];std::rand() & 255 -> apples_y[index];
 	index + 1 -> index;
 	if (index >= 16) {
 		break initApples;
@@ -115,30 +141,5 @@ func drawApples() {
 	}
 }
 
-var key;
-var currentDirection;
 
-var up;
-var down;
-var left;
-var right;
-
-var head_x;
-var head_y;
-
-var tail_x;
-var tail_y;
-
-var head_index;
-var tail_index;
-
-var snake_body_x[512];
-var snake_body_y[512];
-
-var appleEatenCooldown;
-
-var apples_x[16];
-var apples_y[16];
-
-var index;
 
