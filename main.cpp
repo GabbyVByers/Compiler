@@ -4,20 +4,41 @@
 #include <vector>
 #include <iostream>
 #include <cctype>
+#include <cassert>
 
 struct MetaLine {
     std::string line;
-    MetaLine* parent = nullptr;
     std::vector<MetaLine> children;
 
-    void print() {
+    void print(int depth) {
         std::cout << line << "\n";
         for (MetaLine& meta_line : children) {
-            std::cout << "   ";
-            meta_line.print();
+            for (int i = 0; i < depth + 1; i++) { std::cout << "   "; }
+            meta_line.print(depth + 1);
         }
     }
 };
+
+std::vector<MetaLine> recursive_childbirth(std::vector<std::string>& lines, int& i) {
+    std::vector<MetaLine> children;
+    while (true) {
+        if (i >= lines.size())
+            break;
+        std::string& line = lines[i]; i++;
+        if (line == "{") {
+            assert(children.size() > 0);
+            children[children.size() - 1].children = recursive_childbirth(lines, i);
+            continue;
+        }
+        if (line == "}") {
+            break;
+        }
+        MetaLine child;
+        child.line = line;
+        children.push_back(child);
+    }
+    return children;
+}
 
 //std::vector<std::string> tokenize(std::string& input) {
 //    std::vector<std::string> result;
@@ -36,29 +57,6 @@ bool is_only_whitespace(std::string line) {
         }
     }
     return true;
-}
-
-void give_birth(MetaLine& parent, int& current_index, std::vector<std::string>& lines) {
-
-    std::string& line = lines[current_index];
-    std::vector<MetaLine> grand_children;
-    MetaLine child = { line, &parent, grand_children };
-
-    if ((child.line != "{") && (child.line != "}")) {
-        parent.children.push_back(child);
-        current_index += 1;
-        give_birth(parent, current_index, lines);
-    }
-
-    if (child.line == "{") {
-        current_index += 1;
-        give_birth(child, current_index, lines);
-    }
-
-    if (child.line == "}") {
-        current_index += 1;
-        give_birth(*parent.parent, current_index, lines);
-    }
 }
 
 int main() {
@@ -137,47 +135,18 @@ int main() {
         lines.push_back(line);
     }
 
+    for (std::string& line : lines) {
+        std::cout << line << "\n";
+    }
 
-    
-    int global_index = 0;
-    std::vector<MetaLine> children;
-    MetaLine mother = { "I am the mother of all tokens, my scope contains all of your code, gaze upon my children...", nullptr, children };
-    give_birth(mother, global_index, lines);
+    std::cout << "\n\n\n\n";
 
-    mother.print();
+    int current_index = 0;
+    MetaLine mother;
+    mother.line = "I am the mother of all tokens, my scope contains all of your code, gaze upon my children...";
+    mother.children = recursive_childbirth(lines, current_index);
+    mother.print(0);
 
-    //std::vector<MetaLine> meta_lines;
-    //
-    //std::vector<std::vector<MetaLine>*> ancestry;
-    //ancestry.push_back(&meta_lines);
-    //
-    //int num_lines = lines.size();
-    //for (int i = 0; i < num_lines - 1; i++) {
-    //    std::string curr_line = lines[i];
-    //    std::string next_line = lines[i + 1];
-    //
-    //    std::vector<MetaLine> children;
-    //    MetaLine meta_line = { curr_line, children };
-    //    ancestry[ancestry.size() - 1]->push_back(meta_line);
-    //
-    //    if (next_line == "{") {
-    //        ancestry.push_back(&meta_line.children);
-    //        i++;
-    //    }
-    //
-    //    if (next_line == "}") {
-    //        ancestry.pop_back();
-    //        i++;
-    //    }
-    //}
-    //
-    //for (MetaLine& meta_line : meta_lines) {
-    //    meta_line.print();
-    //}
-
-    //for (std::string& line : lines) {
-    //    std::cout << line << "\n";
-    //}
     return 0;
 }
 
