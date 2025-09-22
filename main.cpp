@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cctype>
 
 std::vector<std::string> tokenize(std::string& input) {
     std::vector<std::string> result;
@@ -12,6 +13,15 @@ std::vector<std::string> tokenize(std::string& input) {
         result.push_back(word);
     }
     return result;
+}
+
+bool is_only_whitespace(std::string line) {
+    for (unsigned char ch : line) {
+        if (!std::isspace(ch)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 int main() {
@@ -77,21 +87,21 @@ int main() {
             break;
     }
 
-    std::vector<std::vector<std::string>> source_tokens;
-    for (std::string& line : lines) {
-        std::vector<std::string> tokens = tokenize(line);
-        if (tokens.size() == 0)
+    std::vector<std::string> temp_lines;
+    for (std::string line : lines) {
+        temp_lines.push_back(line);
+    }
+    lines.clear();
+    for (std::string line : temp_lines) {
+        if (is_only_whitespace(line))
             continue;
-        if (tokens[0].substr(0, 2) == "//")
+        if (line.substr(0, 2) == "//")
             continue;
-        source_tokens.push_back(tokens);
+        lines.push_back(line);
     }
 
-    for (std::vector<std::string>& tokens : source_tokens) {
-        for (std::string token : tokens) {
-            std::cout << token << ",";
-        }
-        std::cout << "\n";
+    for (std::string& line : lines) {
+        std::cout << line << "\n";
     }
     return 0;
 }
