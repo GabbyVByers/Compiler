@@ -40,15 +40,23 @@ std::vector<MetaLine> recursive_childbirth(std::vector<std::string>& lines, int&
     return children;
 }
 
-//std::vector<std::string> tokenize(std::string& input) {
-//    std::vector<std::string> result;
-//    std::istringstream iss(input);
-//    std::string word;
-//    while (iss >> word) {
-//        result.push_back(word);
-//    }
-//    return result;
-//}
+std::vector<std::string> tokenize(std::string& input) {
+    std::vector<std::string> result;
+    std::istringstream iss(input);
+    std::string word;
+    while (iss >> word) {
+        result.push_back(word);
+    }
+    return result;
+}
+
+void compile(std::vector<MetaLine>& meta_lines, std::ofstream& output) {
+    for (MetaLine& meta_line : meta_lines) {
+        std::vector<std::string> tokens = tokenize(meta_line.line);
+
+
+    }
+}
 
 bool is_only_whitespace(std::string line) {
     for (unsigned char ch : line) {
@@ -146,6 +154,9 @@ int main() {
     mother.line = "I am the mother of all tokens, my scope contains all of your code, gaze upon my children...";
     mother.children = recursive_childbirth(lines, current_index);
     mother.print(0);
+
+    std::ofstream output("assembly.txt");
+    compile(mother.children, output);
 
     return 0;
 }
