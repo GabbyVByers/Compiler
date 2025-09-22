@@ -5,15 +5,28 @@
 #include <iostream>
 #include <cctype>
 
-std::vector<std::string> tokenize(std::string& input) {
-    std::vector<std::string> result;
-    std::istringstream iss(input);
-    std::string word;
-    while (iss >> word) {
-        result.push_back(word);
+struct MetaLine {
+    std::string line;
+    std::vector<MetaLine> children;
+
+    void print() {
+        std::cout << line << "\n";
+        for (MetaLine& meta_line : children) {
+            std::cout << "   ";
+            meta_line.print();
+        }
     }
-    return result;
-}
+};
+
+//std::vector<std::string> tokenize(std::string& input) {
+//    std::vector<std::string> result;
+//    std::istringstream iss(input);
+//    std::string word;
+//    while (iss >> word) {
+//        result.push_back(word);
+//    }
+//    return result;
+//}
 
 bool is_only_whitespace(std::string line) {
     for (unsigned char ch : line) {
@@ -100,9 +113,36 @@ int main() {
         lines.push_back(line);
     }
 
-    for (std::string& line : lines) {
-        std::cout << line << "\n";
+    std::vector<MetaLine> meta_lines;
+
+    std::vector<std::vector<MetaLine>*> ancestry;
+    ancestry.push_back(&meta_lines);
+
+    int num_lines = lines.size();
+    for (int i = 0; i < num_lines - 1; i++) {
+        std::string curr_line = lines[i];
+        std::string next_line = lines[i + 1];
+
+        std::vector<MetaLine> children;
+        MetaLine meta_line = { curr_line, children };
+        ancestry[ancestry.size() - 1]->push_back(meta_line);
+
+        if (next_line == "{") {
+            ancestry.push_back(&meta_line.children);
+        }
+
+        if (next_line == "}") {
+            ancestry.pop_back();
+        }
     }
-    return 0;
+
+    for (MetaLine& meta_line : meta_lines) {
+        meta_line.print();
+    }
+
+    //for (std::string& line : lines) {
+    //    std::cout << line << "\n";
+    //}
+    //return 0;
 }
 
