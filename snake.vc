@@ -20,6 +20,7 @@ loop initApples {
 	}
 }
 
+// this is a comment
 
 loop main {
 	std::getInput() -> key;
@@ -40,6 +41,9 @@ loop main {
 				appleEatenCooldown + 10 -> appleEatenCooldown;
 				std::rand() & 255 -> apples_x[index];
 				std::rand() & 255 -> apples_y[index];
+				break eatApple;
+				// this is another comment
+				//this is a third comment
 				break eatApple;
 			}
 		}
