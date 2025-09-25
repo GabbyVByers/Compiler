@@ -1,8 +1,4 @@
 
-
-label myJumpPoint;
-goto myJumpPoint;
-
 var key;
 var currentDirection;
 119 -> currentDirection;
@@ -74,7 +70,6 @@ loop main {
 				// this is another comment
 				//this is a third comment
 				break eatApple;
-				continue eatApple;
 			}
 		}
 		index + 1 -> index;

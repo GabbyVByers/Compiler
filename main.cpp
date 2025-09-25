@@ -213,6 +213,7 @@ void compile_tokens(std::vector<std::string>& tokens, std::ofstream& output, std
             (token == ">=") ||
             (token == "<=")) {
             std::string argument = tokens[i + 1];
+            i++;
 
             size_t open_braket_index = argument.find('[');
             size_t close_braket_index = argument.find(']');
@@ -226,9 +227,87 @@ void compile_tokens(std::vector<std::string>& tokens, std::ofstream& output, std
                 if (open_braket_index == std::string::npos) {
                     output << "\tLDR r1 &" + argument + "\n";
                 }
+                else {
+                    std::string array_index = argument.substr(open_braket_index + 1, argument.size() - open_braket_index - 2);
+                    std::string array = argument.substr(0, open_braket_index);
+                    if (string_is_all_numbers(array_index)) {
+                        output << "\tLDI r2 &" + array + "\n\tLDI r3 #" + array_index + "\n\tADD r2 r3\n\tSTX r1 r2\n";
+                    }
+                    else {
+                        output << "\tLDI r2 &" + array + "\n\tLDR r3 &" + array_index + "\n\tADD r2 r3\n\tSTX r1 r2\n";
+                    }
+                }
             }
 
+            if (token == "+") {
+                output << "\tADD r0 r1\n";
+                continue;
+            }
 
+            if (token == "-") {
+                output << "\tSUB r0 r1\n";
+                continue;
+            }
+
+            if (token == "*") {
+                output << "\tJSR .MULTIPLICATION_SUBROUTINE\n";
+                continue;
+            }
+
+            if (token == "/") {
+                output << "\tJSR .DIVISION_SUBROUTINE\n";
+                continue;
+            }
+
+            if (token == "%") {
+                output << "\tJSR .MODULOS_SUBROUTINE\n";
+                continue;
+            }
+
+            if (token == "&") {
+                output << "\tAND r0 r1\n";
+                continue;
+            }
+
+            if (token == "|") {
+                output << "\tORR r0 r1\n";
+                continue;
+            }
+
+            if (token == "^") {
+                output << "\tXOR r0 r1\n";
+                continue;
+            }
+
+            if (token == ">") {
+                output << "\tCMP r0 r1\n\tLDI r0 #0\n\tLDI r0 #1 FLAG_GREATER_THAN\n";
+                continue;
+            }
+
+            if (token == "<") {
+                output << "\tCMP r0 r1\n\tLDI r0 #0\n\tLDI r0 #1 FLAG_LESS_THAN\n";
+                continue;
+            }
+
+            if (token == "==") {
+                output << "\tCMP r0 r1\n\tLDI r0 #0\n\tLDI r0 #1 FLAG_EQUAL\n";
+                continue;
+            }
+
+            if (token == "!=") {
+                output << "\tCMP r0 r1\n\tLDI r0 #0\n\tLDI r0 #1 !FLAG_EQUAL\n";
+                continue;
+            }
+
+            if (token == ">=") {
+                output << "\tCMP r0 r1\n\tLDI r0 #0\n\tLDI r0 #1 !FLAG_LESS_THAN\n";
+                continue;
+            }
+
+            if (token == "<=") {
+                output << "\tCMP r0 r1\n\tLDI r0 #0\n\tLDI r0 #1 !FLAG_GREATER_THAN\n";
+                continue;
+            }
         }
 
         // load accumulator
@@ -250,11 +329,11 @@ void compile_tokens(std::vector<std::string>& tokens, std::ofstream& output, std
                     std::string array_index = token.substr(open_braket_index + 1, token.size() - open_braket_index - 2);
                     std::string array = token.substr(0, open_braket_index);
                     if (string_is_all_numbers(array_index)) {
-                        output << "\tLDI r2 &" + array + "\n\tLDI r3 #" + array_index + "\n\tADD r2 r3\n\tLDX r0 r2";
+                        output << "\tLDI r2 &" + array + "\n\tLDI r3 #" + array_index + "\n\tADD r2 r3\n\tLDX r0 r2\n";
                         continue;
                     }
                     else {
-                        output << "\tLDI r2 &" + array + "\n\tLDR r3 &" + array_index + "\n\tADD r2 r3\n\tLDX r0 r2";
+                        output << "\tLDI r2 &" + array + "\n\tLDR r3 &" + array_index + "\n\tADD r2 r3\n\tLDX r0 r2\n";
                         continue;
                     }
                 }
