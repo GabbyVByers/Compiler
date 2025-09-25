@@ -65,6 +65,16 @@ label END_IF_1
 	LDI r1 #1
 	ADD r0 r1
 	STR r0 &head_index
+	LDR r0 &head_index
+	LDI r1 #512
+	CMP r0 r1
+	LDI r0 #0
+	LDI r0 #1 !FLAG_LESS_THAN
+	CMP r0 r0
+	JMP .END_IF_2 FLAG_ZERO
+	LDI r0 #0
+	STR r0 &head_index
+label END_IF_2
 	LDR r0 &head_x
 	LDI r2 &snake_body_x
 	LDR r3 &head_index
@@ -87,7 +97,7 @@ label LOOP_START_eatApple
 	LDI r0 #0
 	LDI r0 #1 FLAG_EQUAL
 	CMP r0 r0
-	JMP .END_IF_2 FLAG_ZERO
+	JMP .END_IF_3 FLAG_ZERO
 	LDI r2 &apples_y
 	LDR r3 &index
 	ADD r2 r3
@@ -97,7 +107,7 @@ label LOOP_START_eatApple
 	LDI r0 #0
 	LDI r0 #1 FLAG_EQUAL
 	CMP r0 r0
-	JMP .END_IF_3 FLAG_ZERO
+	JMP .END_IF_4 FLAG_ZERO
 	LDR r0 &appleEatenCooldown
 	LDI r1 #10
 	ADD r0 r1
@@ -118,8 +128,8 @@ label LOOP_START_eatApple
 	STX r0 r2
 	JMP .LOOP_END_eatApple
 	JMP .LOOP_END_eatApple
+label END_IF_4
 label END_IF_3
-label END_IF_2
 	LDR r0 &index
 	LDI r1 #1
 	ADD r0 r1
@@ -130,9 +140,9 @@ label END_IF_2
 	LDI r0 #0
 	LDI r0 #1 !FLAG_LESS_THAN
 	CMP r0 r0
-	JMP .END_IF_4 FLAG_ZERO
+	JMP .END_IF_5 FLAG_ZERO
 	JMP .LOOP_END_eatApple
-label END_IF_4
+label END_IF_5
 	JMP .LOOP_START_eatApple
 label LOOP_END_eatApple
 	LDI r2 &snake_body_x
@@ -152,24 +162,34 @@ label LOOP_END_eatApple
 	LDI r0 #0
 	LDI r0 #1 FLAG_EQUAL
 	CMP r0 r0
-	JMP .END_IF_5 FLAG_ZERO
+	JMP .END_IF_6 FLAG_ZERO
 	LDR r0 &tail_index
 	LDI r1 #1
 	ADD r0 r1
 	STR r0 &tail_index
-label END_IF_5
+	LDR r0 &tail_index
+	LDI r1 #512
+	CMP r0 r1
+	LDI r0 #0
+	LDI r0 #1 !FLAG_LESS_THAN
+	CMP r0 r0
+	JMP .END_IF_7 FLAG_ZERO
+	LDI r0 #0
+	STR r0 &tail_index
+label END_IF_7
+label END_IF_6
 	LDR r0 &appleEatenCooldown
 	LDI r1 #0
 	CMP r0 r1
 	LDI r0 #0
 	LDI r0 #1 FLAG_GREATER_THAN
 	CMP r0 r0
-	JMP .END_IF_6 FLAG_ZERO
+	JMP .END_IF_8 FLAG_ZERO
 	LDR r0 &appleEatenCooldown
 	LDI r1 #1
 	SUB r0 r1
 	STR r0 &appleEatenCooldown
-label END_IF_6
+label END_IF_8
 	JSR .FUNCTION_drawApples
 	JMP .LOOP_START_main
 label LOOP_END_main
@@ -180,48 +200,48 @@ label FUNCTION_moveSnakeHead
 	LDI r0 #0
 	LDI r0 #1 FLAG_EQUAL
 	CMP r0 r0
-	JMP .END_IF_7 FLAG_ZERO
+	JMP .END_IF_9 FLAG_ZERO
 	LDR r0 &head_y
 	LDI r1 #1
 	SUB r0 r1
 	STR r0 &head_y
-label END_IF_7
+label END_IF_9
 	LDR r0 &currentDirection
 	LDR r1 &down
 	CMP r0 r1
 	LDI r0 #0
 	LDI r0 #1 FLAG_EQUAL
 	CMP r0 r0
-	JMP .END_IF_8 FLAG_ZERO
+	JMP .END_IF_10 FLAG_ZERO
 	LDR r0 &head_y
 	LDI r1 #1
 	ADD r0 r1
 	STR r0 &head_y
-label END_IF_8
+label END_IF_10
 	LDR r0 &currentDirection
 	LDR r1 &left
 	CMP r0 r1
 	LDI r0 #0
 	LDI r0 #1 FLAG_EQUAL
 	CMP r0 r0
-	JMP .END_IF_9 FLAG_ZERO
+	JMP .END_IF_11 FLAG_ZERO
 	LDR r0 &head_x
 	LDI r1 #1
 	SUB r0 r1
 	STR r0 &head_x
-label END_IF_9
+label END_IF_11
 	LDR r0 &currentDirection
 	LDR r1 &right
 	CMP r0 r1
 	LDI r0 #0
 	LDI r0 #1 FLAG_EQUAL
 	CMP r0 r0
-	JMP .END_IF_10 FLAG_ZERO
+	JMP .END_IF_12 FLAG_ZERO
 	LDR r0 &head_x
 	LDI r1 #1
 	ADD r0 r1
 	STR r0 &head_x
-label END_IF_10
+label END_IF_12
 	RTS
 label FUNCTION_drawSnakeHead
 	LDI r0 #3
@@ -268,12 +288,73 @@ label LOOP_START_drawApples
 	LDI r0 #0
 	LDI r0 #1 !FLAG_LESS_THAN
 	CMP r0 r0
-	JMP .END_IF_11 FLAG_ZERO
+	JMP .END_IF_13 FLAG_ZERO
 	JMP .LOOP_END_drawApples
-label END_IF_11
+label END_IF_13
 	JMP .LOOP_START_drawApples
 label LOOP_END_drawApples
 	RTS
+label MULTIPLICATION_SUBROUTINE
+	MOV r2 r0
+	LDI r0 #0
+	CMP r1 r2
+	MOV r3 r1 FLAG_LESS_THAN
+	MOV r1 r2 FLAG_LESS_THAN
+	MOV r2 r3 FLAG_LESS_THAN
+label MULTIPLICATION_LOOP
+	CMP r2 r2
+	RTS FLAG_ZERO
+	ADD r0 r1
+	ADI r2 #65535
+	JMP .MULTIPLICATION_LOOP
+label DIVISION_SUBROUTINE
+	RTS
+label MODULOS_SUBROUTINE
+	RTS
+label FUNCTION_std::rand
+	LDR r0 &current_rng_state
+	LDI r1 #15
+	JSR .MULTIPLICATION_SUBROUTINE
+	ADI r0 #19
+	MOV r1 r0
+	SHR r1
+	SHR r1
+	SHL r0
+	SHL r0
+	XOR r0 r1
+	MOV r1 r0
+	SHR r1
+	SHR r1
+	SHL r0
+	SHL r0
+	XOR r0 r1
+	MOV r1 r0
+	SHR r1
+	SHR r1
+	SHL r0
+	SHL r0
+	XOR r0 r1
+	MOV r1 r0
+	SHR r1
+	SHR r1
+	SHL r0
+	SHL r0
+	XOR r0 r1
+	STR r0 &current_rng_state
+	RTS
+label FUNCTION_std::getInput
+	KIN r0
+	RTS
+label FUNCTION_std::drawToScreen
+	LDR r0 &screen_color
+	LDR r2 &screen_x
+	LDR r3 &screen_y
+	DRW
+	RTS
+	var screen_color
+	var screen_x
+	var screen_y
+	var current_rng_state
 	var key
 	var currentDirection
 	var up

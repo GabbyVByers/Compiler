@@ -103,8 +103,19 @@ bool string_is_all_numbers(std::string token) {
     return true;
 }
 
+void include_standard_library(std::ofstream& output) {
+
+    std::ifstream standard_lib("standard_library.txt");
+    std::stringstream buffer;
+    buffer << standard_lib.rdbuf();
+    std::string STANDARD_LIBRARY = buffer.str();
+    output << STANDARD_LIBRARY;
+}
+
 void compile_tokens(std::vector<std::string>& tokens, std::ofstream& output, std::vector<std::string>& lines) {
     int num_tokens = tokens.size();
+
+    static bool variables_have_been_written_yet = false;
 
     for (int i = 0; i < num_tokens; i++) {
         std::string token = tokens[i];
@@ -112,6 +123,10 @@ void compile_tokens(std::vector<std::string>& tokens, std::ofstream& output, std
         if (token == "var") {
             assert(i == 0);
             assert(tokens.size() == 2);
+            if (!variables_have_been_written_yet) {
+                include_standard_library(output);
+                variables_have_been_written_yet = true;
+            }
             std::string ASM = "\tvar " + tokens[1] + "\n";
             output << ASM;
             break;

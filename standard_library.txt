@@ -1,0 +1,61 @@
+label MULTIPLICATION_SUBROUTINE
+	MOV r2 r0
+	LDI r0 #0
+	CMP r1 r2
+	MOV r3 r1 FLAG_LESS_THAN
+	MOV r1 r2 FLAG_LESS_THAN
+	MOV r2 r3 FLAG_LESS_THAN
+label MULTIPLICATION_LOOP
+	CMP r2 r2
+	RTS FLAG_ZERO
+	ADD r0 r1
+	ADI r2 #65535
+	JMP .MULTIPLICATION_LOOP
+label DIVISION_SUBROUTINE
+	RTS
+label MODULOS_SUBROUTINE
+	RTS
+label FUNCTION_std::rand
+	LDR r0 &current_rng_state
+	LDI r1 #15
+	JSR .MULTIPLICATION_SUBROUTINE
+	ADI r0 #19
+	MOV r1 r0
+	SHR r1
+	SHR r1
+	SHL r0
+	SHL r0
+	XOR r0 r1
+	MOV r1 r0
+	SHR r1
+	SHR r1
+	SHL r0
+	SHL r0
+	XOR r0 r1
+	MOV r1 r0
+	SHR r1
+	SHR r1
+	SHL r0
+	SHL r0
+	XOR r0 r1
+	MOV r1 r0
+	SHR r1
+	SHR r1
+	SHL r0
+	SHL r0
+	XOR r0 r1
+	STR r0 &current_rng_state
+	RTS
+label FUNCTION_std::getInput
+	KIN r0
+	RTS
+label FUNCTION_std::drawToScreen
+	LDR r0 &screen_color
+	LDR r2 &screen_x
+	LDR r3 &screen_y
+	DRW
+	RTS
+	var screen_color
+	var screen_x
+	var screen_y
+	var current_rng_state

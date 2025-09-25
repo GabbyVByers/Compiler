@@ -45,8 +45,6 @@ loop initApples {
 	}
 }
 
-// this is a comment
-
 loop main {
 	std::getInput() -> key;
 	if (key != 0) {
@@ -56,6 +54,9 @@ loop main {
 	moveSnakeHead();
 	drawSnakeHead();
 	head_index + 1 -> head_index;
+	if (head_index >= 512) {
+		0 -> head_index;
+	}
 	head_x -> snake_body_x[head_index];
 	head_y -> snake_body_y[head_index];
 	
@@ -67,8 +68,6 @@ loop main {
 				std::rand() & 255 -> apples_x[index];
 				std::rand() & 255 -> apples_y[index];
 				break eatApple;
-				// this is another comment
-				//this is a third comment
 				break eatApple;
 			}
 		}
@@ -84,6 +83,9 @@ loop main {
 	
 	if (appleEatenCooldown == 0) {
 		tail_index + 1 -> tail_index;
+		if (tail_index >= 512) {
+			0 -> tail_index;
+		}
 	}
 	
 	if (appleEatenCooldown > 0) {

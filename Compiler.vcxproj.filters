@@ -28,5 +28,8 @@
     <Text Include="assembly.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="standard_library.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
