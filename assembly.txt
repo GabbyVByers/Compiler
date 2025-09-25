@@ -1,0 +1,225 @@
+label GOTO_myJumpPoint
+	JMP .GOTO_myJumpPoint
+	LDI r0 #119
+	STR r0 &currentDirection
+	LDI r0 #119
+	STR r0 &up
+	LDI r0 #115
+	STR r0 &down
+	LDI r0 #97
+	STR r0 &left
+	LDI r0 #100
+	STR r0 &right
+	LDI r0 #127
+	STR r0 &head_x
+	LDI r0 #127
+	STR r0 &head_y
+	LDI r0 #10
+	STR r0 &appleEatenCooldown
+	LDI r0 #0
+	STR r0 &index
+label LOOP_START_initApples
+	JSR .FUNCTION_std::rand
+	LDR r0 &std::rand()
+	LDI r2 &apples_x
+	LDR r3 &index
+	ADD r2 r3
+	STX r0 r2
+	JSR .FUNCTION_std::rand
+	LDR r0 &std::rand()
+	LDI r2 &apples_y
+	LDR r3 &index
+	ADD r2 r3
+	STX r0 r2
+	LDR r0 &index
+	STR r0 &index
+	LDR r0 &index
+	CMP r0 r0
+	JMP .END_IF_0 FLAG_ZERO
+	JMP .LOOP_END_initApples
+label END_IF_0
+	JMP .LOOP_START_initApples
+label LOOP_END_initApples
+label LOOP_START_main
+	JSR .FUNCTION_std::getInput
+	LDR r0 &std::getInput()
+	STR r0 &key
+	LDR r0 &key
+	CMP r0 r0
+	JMP .END_IF_1 FLAG_ZERO
+	LDR r0 &key
+	STR r0 &currentDirection
+label END_IF_1
+	JSR .FUNCTION_moveSnakeHead
+	LDR r0 &moveSnakeHead()
+	JSR .FUNCTION_drawSnakeHead
+	LDR r0 &drawSnakeHead()
+	LDR r0 &head_index
+	STR r0 &head_index
+	LDR r0 &head_x
+	LDI r2 &snake_body_x
+	LDR r3 &head_index
+	ADD r2 r3
+	STX r0 r2
+	LDR r0 &head_y
+	LDI r2 &snake_body_y
+	LDR r3 &head_index
+	ADD r2 r3
+	STX r0 r2
+	LDI r0 #0
+	STR r0 &index
+label LOOP_START_eatApple
+	LDI r2 &apples_x
+	LDR r3 &index
+	ADD r2 r3
+	LDX r0 r2	CMP r0 r0
+	JMP .END_IF_2 FLAG_ZERO
+	LDI r2 &apples_y
+	LDR r3 &index
+	ADD r2 r3
+	LDX r0 r2	CMP r0 r0
+	JMP .END_IF_3 FLAG_ZERO
+	LDR r0 &appleEatenCooldown
+	STR r0 &appleEatenCooldown
+	JSR .FUNCTION_std::rand
+	LDR r0 &std::rand()
+	LDI r2 &apples_x
+	LDR r3 &index
+	ADD r2 r3
+	STX r0 r2
+	JSR .FUNCTION_std::rand
+	LDR r0 &std::rand()
+	LDI r2 &apples_y
+	LDR r3 &index
+	ADD r2 r3
+	STX r0 r2
+	JMP .LOOP_END_eatApple
+	JMP .LOOP_END_eatApple
+	JMP .LOOP_START_eatApple
+label END_IF_3
+label END_IF_2
+	LDR r0 &index
+	STR r0 &index
+	LDR r0 &index
+	CMP r0 r0
+	JMP .END_IF_4 FLAG_ZERO
+	JMP .LOOP_END_eatApple
+label END_IF_4
+	JMP .LOOP_START_eatApple
+label LOOP_END_eatApple
+	LDI r2 &snake_body_x
+	LDR r3 &tail_index
+	ADD r2 r3
+	LDX r0 r2	STR r0 &tail_x
+	LDI r2 &snake_body_y
+	LDR r3 &tail_index
+	ADD r2 r3
+	LDX r0 r2	STR r0 &tail_y
+	JSR .FUNCTION_eraseSnakeTail
+	LDR r0 &eraseSnakeTail()
+	LDR r0 &appleEatenCooldown
+	CMP r0 r0
+	JMP .END_IF_5 FLAG_ZERO
+	LDR r0 &tail_index
+	STR r0 &tail_index
+label END_IF_5
+	LDR r0 &appleEatenCooldown
+	CMP r0 r0
+	JMP .END_IF_6 FLAG_ZERO
+	LDR r0 &appleEatenCooldown
+	STR r0 &appleEatenCooldown
+label END_IF_6
+	JSR .FUNCTION_drawApples
+	LDR r0 &drawApples()
+	JMP .LOOP_START_main
+label LOOP_END_main
+label FUNCTION_moveSnakeHead
+	LDR r0 &currentDirection
+	CMP r0 r0
+	JMP .END_IF_7 FLAG_ZERO
+	LDR r0 &head_y
+	STR r0 &head_y
+label END_IF_7
+	LDR r0 &currentDirection
+	CMP r0 r0
+	JMP .END_IF_8 FLAG_ZERO
+	LDR r0 &head_y
+	STR r0 &head_y
+label END_IF_8
+	LDR r0 &currentDirection
+	CMP r0 r0
+	JMP .END_IF_9 FLAG_ZERO
+	LDR r0 &head_x
+	STR r0 &head_x
+label END_IF_9
+	LDR r0 &currentDirection
+	CMP r0 r0
+	JMP .END_IF_10 FLAG_ZERO
+	LDR r0 &head_x
+	STR r0 &head_x
+label END_IF_10
+	RTS
+label FUNCTION_drawSnakeHead
+	LDI r0 #3
+	STR r0 &screen_color
+	LDR r0 &head_x
+	STR r0 &screen_x
+	LDR r0 &head_y
+	STR r0 &screen_y
+	JSR .FUNCTION_std::drawToScreen
+	LDR r0 &std::drawToScreen()
+	RTS
+label FUNCTION_eraseSnakeTail
+	LDI r0 #0
+	STR r0 &screen_color
+	LDR r0 &tail_x
+	STR r0 &screen_x
+	LDR r0 &tail_y
+	STR r0 &screen_y
+	JSR .FUNCTION_std::drawToScreen
+	LDR r0 &std::drawToScreen()
+	RTS
+label FUNCTION_drawApples
+	LDI r0 #0
+	STR r0 &index
+label LOOP_START_drawApples
+	LDI r0 #2
+	STR r0 &screen_color
+	LDI r2 &apples_x
+	LDR r3 &index
+	ADD r2 r3
+	LDX r0 r2	STR r0 &screen_x
+	LDI r2 &apples_y
+	LDR r3 &index
+	ADD r2 r3
+	LDX r0 r2	STR r0 &screen_y
+	JSR .FUNCTION_std::drawToScreen
+	LDR r0 &std::drawToScreen()
+	LDR r0 &index
+	STR r0 &index
+	LDR r0 &index
+	CMP r0 r0
+	JMP .END_IF_11 FLAG_ZERO
+	JMP .LOOP_END_drawApples
+label END_IF_11
+	JMP .LOOP_START_drawApples
+label LOOP_END_drawApples
+	RTS
+	var key
+	var currentDirection
+	var up
+	var down
+	var left
+	var right
+	var head_x
+	var head_y
+	var tail_x
+	var tail_y
+	var head_index
+	var tail_index
+	var snake_body_x[512]
+	var snake_body_y[512]
+	var appleEatenCooldown
+	var apples_x[16]
+	var apples_y[16]
+	var index

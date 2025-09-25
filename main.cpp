@@ -50,11 +50,275 @@ std::vector<std::string> tokenize(std::string& input) {
     return result;
 }
 
-void compile(std::vector<MetaLine>& meta_lines, std::ofstream& output) {
+void assert_loop_exists(std::string token, std::vector<std::string>& lines) {
+    bool loop_exists = false;
+    for (std::string line : lines) {
+        std::vector<std::string> tokens = tokenize(line);
+        if (tokens[0] == "loop") {
+            if (tokens[1] == token) {
+                loop_exists = true;
+            }
+        }
+    }
+    if (!loop_exists) {
+        std::cout << "CATASTROPHIC ERROR: loop '" << token << "' does not exist!\n";
+        assert(false);
+    }
+}
+
+void assert_goto_label_exists(std::string token, std::vector<std::string>& lines) {
+    bool goto_label_exists = false;
+    for (std::string line : lines) {
+        std::vector<std::string> tokens = tokenize(line);
+        if (tokens[0] == "label") {
+            if (tokens[1] == token) {
+                goto_label_exists = true;
+            }
+        }
+    }
+    if (!goto_label_exists) {
+        std::cout << "CATASTROPHIC ERROR: goto label '" << token << "' does not exist!\n";
+        assert(false);
+    }
+}
+
+bool string_is_all_numbers(std::string token) {
+    for (char ch : token) {
+        if ((ch == '0') ||
+            (ch == '1') ||
+            (ch == '2') ||
+            (ch == '3') ||
+            (ch == '4') ||
+            (ch == '5') ||
+            (ch == '6') ||
+            (ch == '7') ||
+            (ch == '8') ||
+            (ch == '9')) {
+            continue;
+        }
+        else {
+            return false;
+        }
+    }
+    return true;
+}
+
+void compile_tokens(std::vector<std::string>& tokens, std::ofstream& output, std::vector<std::string>& lines) {
+    int num_tokens = tokens.size();
+
+    for (int i = 0; i < num_tokens; i++) {
+        std::string token = tokens[i];
+        
+        if (token == "var") {
+            assert(i == 0);
+            assert(tokens.size() == 2);
+            std::string ASM = "\tvar " + tokens[1] + "\n";
+            output << ASM;
+            break;
+        }
+
+        if (token == "continue") {
+            assert(i == 0);
+            assert(tokens.size() == 2);
+            std::string ASM = "\tJMP .LOOP_START_" + tokens[1] + "\n";
+            assert_loop_exists(tokens[1], lines);
+            output << ASM;
+            break;
+        }
+
+        if (token == "break") {
+            assert(i == 0);
+            assert(tokens.size() == 2);
+            std::string ASM = "\tJMP .LOOP_END_" + tokens[1] + "\n";
+            assert_loop_exists(tokens[1], lines);
+            output << ASM;
+            break;
+        }
+
+        if (token == "->") {
+            assert((i + 2) == tokens.size());
+            std::string argument = tokens[i + 1];
+
+            size_t open_braket_index = argument.find('[');
+            size_t close_braket_index = argument.find(']');
+
+            assert(((open_braket_index == std::string::npos) && (close_braket_index == std::string::npos)) ||
+                   ((open_braket_index != std::string::npos) && (close_braket_index != std::string::npos)));
+
+            if (open_braket_index == std::string::npos) {
+                output << "\tSTR r0 &" + argument + "\n";
+                break;
+            }
+            else {
+                std::string array_index = argument.substr(open_braket_index + 1, argument.size() - open_braket_index - 2);
+                std::string array = argument.substr(0, open_braket_index);
+                if (string_is_all_numbers(array_index)) {
+                    output << "\tLDI r2 &" + array + "\n\tLDI r3 #" + array_index + "\n\tADD r2 r3\n\tSTX r0 r2\n";
+                    break;
+                }
+                else {
+                    output << "\tLDI r2 &" + array + "\n\tLDR r3 &" + array_index + "\n\tADD r2 r3\n\tSTX r0 r2\n";
+                    break;
+                }
+            }
+        }
+
+        if (token == "label") {
+            assert(tokens.size() == 2);
+            output << "label GOTO_" + tokens[1] + "\n";
+            break;
+        }
+
+        if (token == "goto") {
+            assert(tokens.size() == 2);
+            assert_goto_label_exists(tokens[1], lines);
+            output << "\tJMP .GOTO_" + tokens[1] + "\n";
+            break;
+        }
+
+        if (token.size() >= 3) {
+            if (token.substr(token.size() - 2, 2) == "()") {
+                std::string func_name = token.substr(0, token.size() - 2);
+                if (i != 0) {
+                    std::cout << "CATASTROPHIC ERROR: Invoking a function must load accumulator (" << func_name << ")\n";
+                    assert(false);
+                }
+                output << "\tJSR .FUNCTION_" + func_name + "\n";
+                continue;
+            }
+        }
+
+        if (token == ">>") {
+            output << "\tSHR r0\n";
+            continue;
+        }
+
+        if (token == "<<") {
+            output << "\tSHL r0\n";
+            continue;
+        }
+
+        if ((token == "+")  ||
+            (token == "-")  ||
+            (token == "*")  ||
+            (token == "/")  ||
+            (token == "%")  ||
+            (token == "&")  ||
+            (token == "|")  ||
+            (token == "^")  ||
+            (token == ">")  ||
+            (token == "<")  ||
+            (token == "==") ||
+            (token == "!=") ||
+            (token == ">=") ||
+            (token == "<=")) {
+            std::string argument = tokens[i + 1];
+
+            size_t open_braket_index = argument.find('[');
+            size_t close_braket_index = argument.find(']');
+            assert(((open_braket_index == std::string::npos) && (close_braket_index == std::string::npos)) ||
+                   ((open_braket_index != std::string::npos) && (close_braket_index != std::string::npos)));
+
+            if (string_is_all_numbers(argument)) {
+                output << "\tLDI r1 #" + argument + "\n";
+            }
+            else {
+                if (open_braket_index == std::string::npos) {
+                    output << "\tLDR r1 &" + argument + "\n";
+                }
+            }
+
+
+        }
+
+        // load accumulator
+        if (i == 0) {
+            if (string_is_all_numbers(token)) {
+                output << "\tLDI r0 #" + token + "\n";
+                continue;
+            }
+            else {
+                size_t open_braket_index = token.find('[');
+                size_t close_braket_index = token.find(']');
+                assert(((open_braket_index == std::string::npos) && (close_braket_index == std::string::npos)) ||
+                       ((open_braket_index != std::string::npos) && (close_braket_index != std::string::npos)));
+                if (open_braket_index == std::string::npos) {
+                    output << "\tLDR r0 &" + token + "\n";
+                    continue;
+                }
+                else {
+                    std::string array_index = token.substr(open_braket_index + 1, token.size() - open_braket_index - 2);
+                    std::string array = token.substr(0, open_braket_index);
+                    if (string_is_all_numbers(array_index)) {
+                        output << "\tLDI r2 &" + array + "\n\tLDI r3 #" + array_index + "\n\tADD r2 r3\n\tLDX r0 r2";
+                        continue;
+                    }
+                    else {
+                        output << "\tLDI r2 &" + array + "\n\tLDR r3 &" + array_index + "\n\tADD r2 r3\n\tLDX r0 r2";
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void compile(std::vector<MetaLine>& meta_lines, std::ofstream& output, std::vector<std::string>& lines) {
+    static int if_statement_counter = -1;
+    
     for (MetaLine& meta_line : meta_lines) {
-        std::vector<std::string> tokens = tokenize(meta_line.line);
+        std::string line = meta_line.line;
+        std::vector<std::string> tokens = tokenize(line);
 
+        if (tokens[0] == "if") {
+            assert(tokens.size() >= 2);
+            assert(tokens[1][0] == '(');
+            assert(tokens[tokens.size() - 1][tokens[tokens.size() - 1].size() - 1] == ')');
+            std::vector<std::string> local_tokens;
+            for (int i = 1; i < tokens.size(); i++) {
+                std::string token = tokens[i];
+                if (i == 1) {
+                    token.erase(0, 1);
+                }
+                if (i == tokens.size() - 1) {
+                    token.erase(token.size() - 1);
+                }
+                local_tokens.push_back(token);
+            }
+            compile_tokens(local_tokens, output, lines);
+            if_statement_counter++;
+            std::string ASM_BEGIN = "\tCMP r0 r0\n\tJMP .END_IF_" + std::to_string(if_statement_counter) + " FLAG_ZERO\n";
+            std::string ASM_END = "label END_IF_" + std::to_string(if_statement_counter) + "\n";
+            output << ASM_BEGIN;
+            compile(meta_line.children, output, lines);
+            output << ASM_END;
+            continue;
+        }
 
+        if (tokens[0] == "func") {
+            assert(tokens.size() == 2);
+            assert(tokens[1].size() >= 3);
+            assert(tokens[1].substr(tokens[1].size() - 2, 2) == "()");
+            std::string func_name = tokens[1].substr(0, tokens[1].size() - 2);
+            std::string ASM_BEGIN = "label FUNCTION_" + func_name + "\n";
+            std::string ASM_END = "\tRTS\n";
+            output << ASM_BEGIN;
+            compile(meta_line.children, output, lines);
+            output << ASM_END;
+            continue;
+        }
+
+        if (tokens[0] == "loop") {
+            assert(tokens.size() == 2);
+            std::string ASM_BEGIN = "label LOOP_START_" + tokens[1] + "\n";
+            std::string ASM_END = "\tJMP .LOOP_START_" + tokens[1] + "\nlabel LOOP_END_" + tokens[1] + "\n";
+            output << ASM_BEGIN;
+            compile(meta_line.children, output, lines);
+            output << ASM_END;
+            continue;
+        }
+
+        compile_tokens(tokens, output, lines);
     }
 }
 
@@ -156,7 +420,7 @@ int main() {
     mother.print(0);
 
     std::ofstream output("assembly.txt");
-    compile(mother.children, output);
+    compile(mother.children, output, lines);
 
     return 0;
 }
