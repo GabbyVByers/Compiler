@@ -426,7 +426,7 @@ bool is_only_whitespace(std::string line) {
 }
 
 int main() {
-    std::ifstream source_file("snake.vc");
+    std::ifstream source_file("test_code.vc");
     std::string content((std::istreambuf_iterator<char>(source_file)), std::istreambuf_iterator<char>());
 
     std::string temp_content = content;

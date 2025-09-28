@@ -1,0 +1,38 @@
+
+
+var x;
+var y;
+
+
+var index;
+var num_chars;
+5 -> num_chars;
+
+var color;
+var max_color;
+8 -> max_color;
+
+
+loop main {
+	
+	10 -> screen_x;
+	10 -> screen_y;
+	color + 1 -> color;
+	color -> screen_color;
+	if (color >= max_color){
+		0 -> color;
+	}
+
+	0 -> index;
+	loop draw_char_loop {
+
+		 std::blit_A();
+		 std::blit_B();
+		 std::blit_C();
+	
+		index + 1 -> index;
+		if (index >= num_chars) {
+			break draw_char_loop;
+		}
+	}
+}

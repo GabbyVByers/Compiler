@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="snake.vc" />
+    <None Include="test_code.vc" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="assembly.txt" />
