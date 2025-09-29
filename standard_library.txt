@@ -1,3 +1,8 @@
+//
+// THE "VIOLET C" STANDARD LIBRARY
+// PRE-IMPLEMENTED HELPER FUNCTIONS, INCLUDING I/O
+//
+
 label FUNCTION_std::blit_A
 	LDR r0 &screen_color
 	LDR r2 &screen_x
@@ -139,7 +144,6 @@ label FUNCTION_std::blit_C
 	STR r3 &screen_y
 	RTS
 
-
 label MULTIPLICATION_SUBROUTINE
 	MOV r2 r0
 	LDI r0 #0
@@ -153,10 +157,13 @@ label MULTIPLICATION_LOOP
 	ADD r0 r1
 	ADI r2 #65535
 	JMP .MULTIPLICATION_LOOP
+
 label DIVISION_SUBROUTINE
 	RTS
+
 label MODULOS_SUBROUTINE
 	RTS
+
 label FUNCTION_std::rand
 	LDR r0 &current_rng_state
 	LDI r1 #15
@@ -188,15 +195,18 @@ label FUNCTION_std::rand
 	XOR r0 r1
 	STR r0 &current_rng_state
 	RTS
+
 label FUNCTION_std::getInput
 	KIN r0
 	RTS
+
 label FUNCTION_std::drawToScreen
 	LDR r0 &screen_color
 	LDR r2 &screen_x
 	LDR r3 &screen_y
 	DRW
 	RTS
+
 	var screen_color
 	var screen_x
 	var screen_y
