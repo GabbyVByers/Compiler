@@ -144,6 +144,192 @@ label FUNCTION_std::blit_C
 	STR r3 &screen_y
 	RTS
 
+label FUNCTION_std::blit_D
+	LDR r0 &screen_color
+	LDR r2 &screen_x
+	LDR r3 &screen_y
+	ADI r2 #1
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	ADI r3 #65535
+	DRW
+	ADI r3 #65535
+	DRW
+	ADI r3 #65535
+	DRW
+	ADI r3 #65535
+	DRW
+	ADI r3 #65535
+	DRW
+	ADI r3 #65535
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #5
+	ADI r3 #65535
+	STR r2 &screen_x
+	STR r3 &screen_y
+	RTS
+
+label FUNCTION_std::blit_E
+	LDR r0 &screen_color
+	LDR r2 &screen_x
+	LDR r3 &screen_y
+	ADI r2 #1
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r3 #65530
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r3 #3
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #3
+	ADI r3 #65532
+	STR r2 &screen_x
+	STR r3 &screen_y
+	RTS
+
+label FUNCTION_std::blit_F
+	LDR r0 &screen_color
+	LDR r2 &screen_x
+	LDR r3 &screen_y
+	ADI r2 #1
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r2 #1
+	ADI r3 #65533
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	ADI r3 #65533
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #5
+	ADI r3 #65535
+	STR r2 &screen_x
+	STR r3 &screen_y
+	RTS
+
+label FUNCTION_std::blit_G
+	LDR r0 &screen_color
+	LDR r2 &screen_x
+	LDR r3 &screen_y
+	ADI r2 #1
+	ADI r3 #2
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	DRW
+	ADI r3 #1
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	DRW
+	ADI r2 #1
+	ADI r3 #65535
+	DRW
+	ADI r3 #65535
+	DRW
+	ADI r3 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r3 #65534
+	ADI r2 #2
+	DRW
+	ADI r3 #65535
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #65535
+	DRW
+	ADI r2 #5
+	ADI r3 #65535
+	STR r2 &screen_x
+	STR r3 &screen_y
+	RTS
+
 label MULTIPLICATION_SUBROUTINE
 	MOV r2 r0
 	LDI r0 #0
