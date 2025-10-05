@@ -1,17 +1,12 @@
 
-
 var x;
 var y;
-
-
 var index;
 var num_chars;
 2 -> num_chars;
-
 var color;
 var max_color;
 8 -> max_color;
-
 
 loop main {
 	
