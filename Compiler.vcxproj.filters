@@ -26,6 +26,12 @@
     <None Include="test_code.vc">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="snake2.vc">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="scatter_test.vc">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="assembly.txt">

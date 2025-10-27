@@ -1,0 +1,360 @@
+
+// GLOBAL VARIABLE DELCARATIONS
+var GREEN;            12 -> GREEN;
+var BACKGROUND_COLOR; 21 -> BACKGROUND_COLOR;
+var WALL_COLOR;       0  -> WALL_COLOR;
+var RED;              48 -> RED;
+var UP;    1 -> UP;
+var DOWN;  2 -> DOWN;
+var LEFT;  3 -> LEFT;
+var RIGHT; 4 -> RIGHT;
+var game_over; 0 -> game_over;
+var head_index;
+var tail_index;
+var index;
+var apple_cool_down; 0 -> apple_cool_down;
+
+// PROGRAM ENTRANCE POINT
+main();
+func main() {
+	clear_screen();
+	draw_walls();
+	init_apples();
+	init_snake();
+	game_loop();
+}
+
+// Clear Screen
+func clear_screen() {
+	BACKGROUND_COLOR -> screen_color;
+	0 -> screen_y;
+	loop for_y {
+		0 -> screen_x;
+		loop for_x {
+			std::drawToScreen();
+			screen_x + 1 -> screen_x;
+			if (screen_x == 256) {
+				break for_x;
+			}
+		}
+		screen_y + 1 -> screen_y;
+		if (screen_y == 256) {
+			break for_y;
+		}
+	}
+}
+
+
+// Draw Walls
+func draw_walls() {
+	var pixel_x;
+	var pixel_y;
+	
+	0 -> pixel_x;
+	0 -> pixel_y;
+	loop topwll {
+		WALL_COLOR -> screen_color;
+		pixel_x * 2 -> screen_x;
+		pixel_y * 2 -> screen_y;
+		draw_four_pixels();
+		pixel_x + 1 -> pixel_x;
+		if (pixel_x == 128) {
+			break topwll;
+		}
+	}
+	0 -> pixel_x;
+	127 -> pixel_y;
+	loop bttmwll {
+		WALL_COLOR -> screen_color;
+		pixel_x * 2 -> screen_x;
+		pixel_y * 2 -> screen_y;
+		draw_four_pixels();
+		pixel_x + 1 -> pixel_x;
+		if (pixel_x == 128) {
+			break bttmwll;
+		}
+	}
+	0 -> pixel_x;
+	0 -> pixel_y;
+	loop lftwll {
+		WALL_COLOR -> screen_color;
+		pixel_x * 2 -> screen_x;
+		pixel_y * 2 -> screen_y;
+		draw_four_pixels();
+		pixel_y + 1 -> pixel_y;
+		if (pixel_y == 128) {
+			break lftwll;
+		}
+	}
+	127 -> pixel_x;
+	0 -> pixel_y;
+	loop rgtwll {
+		WALL_COLOR -> screen_color;
+		pixel_x * 2 -> screen_x;
+		pixel_y * 2 -> screen_y;
+		draw_four_pixels();
+		pixel_y + 1 -> pixel_y;
+		if (pixel_y == 128) {
+			break rgtwll;
+		}
+	}
+}
+
+// Initialize, and Draw, Random Apples
+var apples_x[32];
+var apples_y[32];
+func init_apples() {
+	0 -> index;
+	loop appl {
+		std::rand() & 127 -> apples_x[index];
+		std::rand() & 127 -> apples_y[index];
+		index + 1 -> index;
+		if (index == 32) {
+			break appl;
+		}
+	}
+	0 -> index;
+	loop drwappls {
+		RED -> screen_color;
+		apples_x[index] * 2 -> screen_x;
+		apples_y[index] * 2 -> screen_y;
+		draw_four_pixels();
+		index + 1 -> index;
+		if (index == 32) {
+			break drwappls;
+		}
+	}
+}
+
+// Initialize Snake
+func init_snake() {
+	// Built Init Snake
+	4 -> head_index;
+	0 -> tail_index;
+	32 -> snake_body_x[0];
+	33 -> snake_body_x[1];
+	34 -> snake_body_x[2];
+	35 -> snake_body_x[3];
+	36 -> snake_body_x[4];
+	64 -> snake_body_y[0];
+	64 -> snake_body_y[1];
+	64 -> snake_body_y[2];
+	64 -> snake_body_y[3];
+	64 -> snake_body_y[4];
+	RIGHT -> curr_direction;
+	// Draw Init Snake
+	tail_index -> index;
+	loop drw_init_snk {
+		GREEN -> screen_color;
+		snake_body_x[index] * 2 -> screen_x;
+		snake_body_y[index] * 2 -> screen_y;
+		draw_four_pixels();
+		index + 1 -> index;
+		if (head_index + 1 == index) {
+			break drw_init_snk;
+		}
+	}
+}
+
+// Draw Four Pixels
+func draw_four_pixels() {
+	std::drawToScreen();
+	screen_x + 1 -> screen_x;
+	std::drawToScreen();
+	screen_y + 1 -> screen_y;
+	std::drawToScreen();
+	screen_x - 1 -> screen_x;
+	std::drawToScreen();
+	screen_y - 1 -> screen_y;
+}
+
+// Game Loop
+func game_loop() {
+	loop main_loop {
+		// Restart Game
+		var input;
+		std::getInput() & 255 -> input;
+		if (input == 16) {
+			clear_screen();
+			draw_walls();
+			init_apples();
+			init_snake();
+		}
+		
+		// Get Direction from NES Controller With Delay
+		var delay;
+		0 -> delay;
+		loop delaylp {
+			std::getInput() & 255 -> input;
+			var curr_direction;
+			if (input == 8) {
+				if (curr_direction != DOWN) {
+					UP -> curr_direction;
+				}
+			}
+			if (input == 4) {
+				if (curr_direction != UP) {
+					DOWN -> curr_direction;
+				}
+			}
+			if (input == 2) {
+				if (curr_direction != RIGHT) {
+					LEFT -> curr_direction;
+				}
+			}
+			if (input == 1) {
+				if (curr_direction != LEFT) {
+					RIGHT -> curr_direction;
+				}
+			}
+			delay + 1 -> delay;
+			if (delay == 140) {
+				break delaylp;
+			}
+		}
+		
+		// Advance the Head Forward
+		var curr_x;
+		var curr_y;
+		snake_body_x[head_index] -> curr_x;
+		snake_body_y[head_index] -> curr_y;
+		if (curr_direction == UP) {
+			curr_y - 1 -> curr_y;
+		}
+		if (curr_direction == DOWN) {
+			curr_y + 1 -> curr_y;
+		}
+		if (curr_direction == LEFT) {
+			curr_x - 1 -> curr_x;
+		}
+		if (curr_direction == RIGHT) {
+			curr_x + 1 -> curr_x;
+		}
+		
+		// Check Head Position Against Body
+		tail_index -> index;
+		loop body_collision_loop {
+			var this_x;
+			var this_y;
+			snake_body_x[index] -> this_x;
+			snake_body_y[index] -> this_y;
+			if (this_x == curr_x) {
+				if (this_y == curr_y) {
+					game_over();
+				}
+			}
+			index + 1 -> index;
+			if (head_index + 1 == index) {
+				break body_collision_loop;
+			}
+		}
+		
+		// Check Head Position Against Walls
+		if (curr_x == 0) {
+			game_over();
+		}
+		if (curr_x == 127) {
+			game_over();
+		}
+		if (curr_y == 0) {
+			game_over();
+		}
+		if (curr_y == 127) {
+			game_over();
+		}
+		
+		// Check Head Position Against Apples
+		0 -> index;
+		loop eatappl {
+			var appl_x;
+			var appl_y;
+			apples_x[index] -> appl_x;
+			apples_y[index] -> appl_y;
+			if (curr_x == appl_x){
+				if (curr_y == appl_y) {
+					apple_cool_down + 10 -> apple_cool_down;
+					std::rand() & 127 -> apples_x[index];
+					std::rand() & 127 -> apples_y[index];
+					break eatappl;
+				}
+			}
+			index + 1 -> index;
+			if (index == 32) {
+				break eatappl;
+			}
+		}
+		
+		// Increment Head Position, Write the new Head Position into the Body Arrays
+		var snake_body_x[1024];
+		var snake_body_y[1024];
+		head_index + 1 -> head_index;
+		curr_x -> snake_body_x[head_index];
+		curr_y -> snake_body_y[head_index];
+		
+		// Draw the New Head
+		GREEN -> screen_color;
+		snake_body_x[head_index] * 2 -> screen_x;
+		snake_body_y[head_index] * 2 -> screen_y;
+		draw_four_pixels();
+		
+		// Erase the Tail, then Advance the tail pointer, if have not recently eaten an apple
+		if (apple_cool_down == 0) {
+			BACKGROUND_COLOR -> screen_color;
+			snake_body_x[tail_index] * 2 -> screen_x;
+			snake_body_y[tail_index] * 2 -> screen_y;
+			draw_four_pixels();
+			tail_index + 1 -> tail_index;
+		}
+		if (apple_cool_down != 0) {
+			apple_cool_down - 1 -> apple_cool_down;
+		}
+		
+		// Redraw Apples
+		0 -> index;
+		loop drwappls2 {
+			RED -> screen_color;
+			apples_x[index] * 2 -> screen_x;
+			apples_y[index] * 2 -> screen_y;
+			draw_four_pixels();
+			index + 1 -> index;
+			if (index == 32) {
+				break drwappls2;
+			}
+		}
+	}
+}
+
+
+// Game Over
+func game_over() {
+	var text_color;
+	0 -> text_color;
+	loop lose_message {
+		// "GAME OVER" Display
+		text_color -> screen_color;
+		93 -> screen_x;
+		115 -> screen_y;
+		std::blit_G();
+		std::blit_A();
+		std::blit_M();
+		std::blit_E();
+		std::blit_SPACE();
+		std::blit_O();
+		std::blit_V();
+		std::blit_E();
+		std::blit_R();
+		text_color + 1 -> text_color;
+		
+		// Restart Game
+		std::getInput() & 255 -> input;
+		if (input == 16) {
+			main();
+		}
+	}
+}
+
+
+
+
+
+

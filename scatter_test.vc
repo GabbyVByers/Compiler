@@ -1,0 +1,15 @@
+
+
+
+var INCLUDE_STD;
+
+
+
+loop Main {
+	48 -> screen_color;
+	std::rand() & 255 -> screen_x;
+	std::rand() & 255 -> screen_y;
+	std::drawToScreen();
+}
+
+

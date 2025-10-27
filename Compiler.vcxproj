@@ -126,7 +126,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="scatter_test.vc" />
     <None Include="snake.vc" />
+    <None Include="snake2.vc" />
     <None Include="test_code.vc" />
   </ItemGroup>
   <ItemGroup>
